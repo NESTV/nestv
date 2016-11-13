@@ -59,7 +59,7 @@ vec2 align(vec2 uv){
 void main() {
     vec2 uv = gl_FragCoord.xy / iDimensions;
     vec2 crtUV = CRTCurveUV(uv);
-    vec2 textureUv = uv;
+    vec2 textureUv = crtUV;
 
     vec3 color = texture2D(uNesTexture, vec2(textureUv.x, 1.0 - textureUv.y)).rgb; //vec3(uv, 0.0);
 

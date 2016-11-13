@@ -78,7 +78,8 @@ function init() {
     document.getElementById("fullScreen").onclick = function(){
 
         //can adjust size here
-        //dimensions[0] = 1024;
+        dimensions[0] = 1024;
+        dimensions[1] = 1024*480/640;
         canvas.width = dimensions[0];
         canvas.height = dimensions[1];
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
