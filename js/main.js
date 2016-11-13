@@ -10,12 +10,15 @@ var dimensions = [640, 480];
 var nesTexture;
 var tempCanvasContext;
 var tempCanvas;
+var nesCanvas;
 
 window.onload = init;
 
 function init() {
     canvas        = document.getElementById('glscreen');
     gl            = canvas.getContext('experimental-webgl');
+    nesCanvas = $('.nes-screen')[0];
+
     canvas.width  = dimensions[0];
     canvas.height = dimensions[1];
 
@@ -78,22 +81,25 @@ function init() {
     document.getElementById("fullScreen").onclick = function(){
 
         //can adjust size here
-        dimensions[0] = 1024;
-        dimensions[1] = 1024*480/640;
+        dimensions[0] = screen.height * 4 / 3;
+        dimensions[1] = screen.height;
         canvas.width = dimensions[0];
         canvas.height = dimensions[1];
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-        var elem = document.getElementById("glscreen");
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-        } else if (elem.mozRequestFullScreen) {
-            elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-        }}
+        fullscreen(canvas);
+}
+
+function fullscreen(elem){
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    }}
 }
 
 function render() {
@@ -101,7 +107,7 @@ function render() {
 
     copyNesScreenToTexture();
 
-    gl.uniform1f(iGlobalTime, (Date.now() / 1000 ) % 1);
+    gl.uniform1f(iGlobalTime, (Date.now() / 1000) % 10000);
     gl.uniform2fv(iResolution, dimensions);
 
     gl.activeTexture(gl.TEXTURE0);
@@ -112,7 +118,6 @@ function render() {
 }
 
 var copyNesScreenToTexture = function(){
-    var nesCanvas = $('.nes-screen')[0];
     gl.bindTexture(gl.TEXTURE_2D, nesTexture);
 
     tempCanvasContext.drawImage(nesCanvas, 0, 0);

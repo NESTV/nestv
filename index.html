@@ -69,7 +69,7 @@ void main() {
         color = vec3( 0.0, 0.0, 0.0 );
     }
     DrawVignette(color, crtUV);
-    DrawScanline(color, uv);
+    DrawScanline(color, vec2(uv.x, crtUV.y));
     gl_FragColor = vec4(color, 1.0);
 }
 </script>
