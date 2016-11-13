@@ -6,11 +6,13 @@ var buffer;
 var iGlobalTime;
 var iResolution;
 var uNesTexture;
+var uBorderTexture;
 var dimensions = [640, 480];
 var nesTexture;
 var tempCanvasContext;
 var tempCanvas;
 var nesCanvas;
+var borderTexture;
 
 window.onload = init;
 
@@ -63,6 +65,7 @@ function init() {
     iGlobalTime = gl.getUniformLocation(program, "iGlobalTime");
     iResolution = gl.getUniformLocation(program, "iResolution");
     uNesTexture = gl.getUniformLocation(program, "uNesTexture");
+    uBorderTexture = gl.getUniformLocation(program, "uBorderTexture");
 
     tempCanvas = document.createElement('canvas');
     tempCanvas.width = 256;
@@ -75,6 +78,10 @@ function init() {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tempCanvas);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    borderTexture = loadTexture("img/tv_border_2.png");
+
+    $('.nes-screen').hide();
 
     render();
 
@@ -89,6 +96,23 @@ function init() {
 
         fullscreen(canvas);
 }
+
+    function loadTexture(url) {
+        var newTexture = gl.createTexture();
+        var image = new Image();
+        image.onload = function() { handleTextureLoaded(image, newTexture); }
+        image.src = url;
+        return newTexture;
+    }
+
+    function handleTextureLoaded(image, texture) {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
 
 function fullscreen(elem){
     if (elem.requestFullscreen) {
@@ -113,6 +137,10 @@ function render() {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, nesTexture);
     gl.uniform1i(uNesTexture, 0);
+
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, borderTexture);
+    gl.uniform1i(uBorderTexture, 1);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 }

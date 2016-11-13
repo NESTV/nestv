@@ -28,12 +28,13 @@ attribute vec2 a_position;
 uniform float iGlobalTime;
 uniform vec2 iResolution;
 uniform sampler2D uNesTexture;
+uniform sampler2D uBorderTexture;
 
 vec2 CRTCurveUV( vec2 uv )
 {
     uv = uv * 2.0 - 1.0;
     vec2 offset = abs( uv.yx ) / vec2( 6.0, 4.0 );
-    uv = uv + uv * offset * offset;
+    uv = uv + uv * offset * offset * 0.5;
     uv = uv * 0.5 + 0.5;
     return uv;
 }
@@ -64,6 +65,10 @@ void main() {
 
     //vec3 color = texture2D(uNesTexture, nearest(vec2(textureUv.x, 1.0 - textureUv.y), vec2(256.0))).rgb;
     vec3 color = texture2D(uNesTexture, vec2(textureUv.x, 1.0 - textureUv.y)).rgb;
+
+    vec4 border = texture2D(uBorderTexture, vec2(textureUv.x, 1.0 - textureUv.y));
+
+    color = color.rgb * (1.0 - border.a) + border.rgb * border.a;
 
     if ( crtUV.x < 0.0 || crtUV.x > 1.0 || crtUV.y < 0.0 || crtUV.y > 1.0 ) {
         color = vec3( 0.0, 0.0, 0.0 );
