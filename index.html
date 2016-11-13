@@ -52,8 +52,9 @@ void DrawScanline( inout vec3 color, vec2 uv )
     color *= scanline * grille * 1.2;
 }
 
-vec2 align(vec2 uv){
-  return floor(uv * 256.0) / 256.0;
+vec2 nearest(vec2 uv, vec2 textureDimension)
+{
+   return 1.0/(2.0*textureDimension) + floor(uv*textureDimension)/textureDimension;
 }
 
 void main() {
@@ -61,7 +62,8 @@ void main() {
     vec2 crtUV = CRTCurveUV(uv);
     vec2 textureUv = crtUV;
 
-    vec3 color = texture2D(uNesTexture, vec2(textureUv.x, 1.0 - textureUv.y)).rgb; //vec3(uv, 0.0);
+    //vec3 color = texture2D(uNesTexture, nearest(vec2(textureUv.x, 1.0 - textureUv.y), vec2(256.0))).rgb;
+    vec3 color = texture2D(uNesTexture, vec2(textureUv.x, 1.0 - textureUv.y)).rgb;
 
     if ( crtUV.x < 0.0 || crtUV.x > 1.0 || crtUV.y < 0.0 || crtUV.y > 1.0 ) {
         color = vec3( 0.0, 0.0, 0.0 );
