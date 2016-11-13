@@ -27,6 +27,7 @@ attribute vec2 a_position;
 
 uniform float iGlobalTime;
 uniform vec2 iDimensions;
+uniform sampler2D uNesTexture;
 
 vec2 CRTCurveUV( vec2 uv )
 {
@@ -51,10 +52,17 @@ void DrawScanline( inout vec3 color, vec2 uv )
     color *= scanline * grille * 1.2;
 }
 
+vec2 align(vec2 uv){
+  return floor(uv * 256.0) / 256.0;
+}
+
 void main() {
     vec2 uv = gl_FragCoord.xy / iDimensions;
-    vec3 color = vec3(uv, 0.0);
     vec2 crtUV = CRTCurveUV(uv);
+    vec2 textureUv = uv;
+
+    vec3 color = texture2D(uNesTexture, vec2(textureUv.x, 1.0 - textureUv.y)).rgb; //vec3(uv, 0.0);
+
     if ( crtUV.x < 0.0 || crtUV.x > 1.0 || crtUV.y < 0.0 || crtUV.y > 1.0 ) {
         color = vec3( 0.0, 0.0, 0.0 );
     }

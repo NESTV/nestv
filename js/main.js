@@ -1,9 +1,15 @@
+$(function() {
+
 var gl;
 var canvas;
 var buffer;
 var iGlobalTime;
 var iDimensions;
+var uNesTexture;
 var dimensions = [640, 480];
+var nesTexture;
+var tempCanvasContext;
+var tempCanvas;
 
 window.onload = init;
 
@@ -53,6 +59,19 @@ function init() {
 
     iGlobalTime = gl.getUniformLocation(program, "iGlobalTime");
     iDimensions = gl.getUniformLocation(program, "iDimensions");
+    uNesTexture = gl.getUniformLocation(program, "uNesTexture");
+
+    tempCanvas = document.createElement('canvas');
+    tempCanvas.width = 256;
+    tempCanvas.height = 256;
+
+    tempCanvasContext = tempCanvas.getContext('2d');
+
+    nesTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, nesTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tempCanvas);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 
     render();
 
@@ -77,8 +96,26 @@ function init() {
 function render() {
     window.requestAnimationFrame(render, canvas);
 
+    copyNesScreenToTexture();
+
     gl.uniform1f(iGlobalTime, (Date.now() / 1000 ) % 1);
     gl.uniform2fv(iDimensions, dimensions);
 
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, nesTexture);
+    gl.uniform1i(uNesTexture, 0);
+
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
+
+var copyNesScreenToTexture = function(){
+    var nesCanvas = $('.nes-screen')[0];
+    gl.bindTexture(gl.TEXTURE_2D, nesTexture);
+
+    tempCanvasContext.drawImage(nesCanvas, 0, 0);
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tempCanvas);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+});
