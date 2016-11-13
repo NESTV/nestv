@@ -4,7 +4,7 @@ var gl;
 var canvas;
 var buffer;
 var iGlobalTime;
-var iDimensions;
+var iResolution;
 var uNesTexture;
 var dimensions = [640, 480];
 var nesTexture;
@@ -58,7 +58,7 @@ function init() {
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
     iGlobalTime = gl.getUniformLocation(program, "iGlobalTime");
-    iDimensions = gl.getUniformLocation(program, "iDimensions");
+    iResolution = gl.getUniformLocation(program, "iResolution");
     uNesTexture = gl.getUniformLocation(program, "uNesTexture");
 
     tempCanvas = document.createElement('canvas');
@@ -102,7 +102,7 @@ function render() {
     copyNesScreenToTexture();
 
     gl.uniform1f(iGlobalTime, (Date.now() / 1000 ) % 1);
-    gl.uniform2fv(iDimensions, dimensions);
+    gl.uniform2fv(iResolution, dimensions);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, nesTexture);
