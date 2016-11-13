@@ -100,7 +100,8 @@ function init() {
     function loadTexture(url) {
         var newTexture = gl.createTexture();
         var image = new Image();
-        image.onload = function() { handleTextureLoaded(image, newTexture); }
+        image.onload = function() { handleTextureLoaded(image, newTexture); };
+        image.crossOrigin = '';
         image.src = url;
         return newTexture;
     }
