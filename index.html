@@ -34,7 +34,7 @@ vec2 CRTCurveUV( vec2 uv )
 {
     uv = uv * 2.0 - 1.0;
     vec2 offset = abs( uv.yx ) / vec2( 6.0, 4.0 );
-    uv = uv + uv * offset * offset * 0.5;
+    uv = uv + uv * offset * offset;
     uv = uv * 0.5 + 0.5;
     return uv;
 }
@@ -58,23 +58,31 @@ vec2 nearest(vec2 uv, vec2 textureDimension)
    return 1.0/(2.0*textureDimension) + floor(uv*textureDimension)/textureDimension;
 }
 
-void main() {
-    vec2 uv = gl_FragCoord.xy / iResolution;
+vec3 nesColor(vec2 uv) {
+    uv = (uv - vec2(270.0/670.0,265.0/515.0)) * 1.35 + vec2(0.5);
+
     vec2 crtUV = CRTCurveUV(uv);
     vec2 textureUv = crtUV;
 
-    //vec3 color = texture2D(uNesTexture, nearest(vec2(textureUv.x, 1.0 - textureUv.y), vec2(256.0))).rgb;
     vec3 color = texture2D(uNesTexture, vec2(textureUv.x, 1.0 - textureUv.y)).rgb;
-
-    vec4 border = texture2D(uBorderTexture, vec2(textureUv.x, 1.0 - textureUv.y));
-
-    color = color.rgb * (1.0 - border.a) + border.rgb * border.a;
 
     if ( crtUV.x < 0.0 || crtUV.x > 1.0 || crtUV.y < 0.0 || crtUV.y > 1.0 ) {
         color = vec3( 0.0, 0.0, 0.0 );
     }
     DrawVignette(color, crtUV);
     DrawScanline(color, vec2(uv.x, crtUV.y));
+
+    return color;
+}
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / iResolution;
+
+    vec3 color = nesColor(uv);
+
+    vec4 border = texture2D(uBorderTexture, vec2(uv.x * 670.0 / 1024.0, 1.0 - uv.y));
+    color = color.rgb * (1.0 - border.a) + border.rgb * border.a;
+
     gl_FragColor = vec4(color, 1.0);
 }
 </script>
