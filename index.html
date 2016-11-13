@@ -46,10 +46,10 @@ void DrawVignette( inout vec3 color, vec2 uv )
     color *= vignette;
 }
 
-void DrawScanline( inout vec3 color, vec2 uv )
+void DrawScanline( inout vec3 color, vec2 uv, vec2 effectiveRes )
 {
-    float scanline = clamp( 0.95 + 0.05 * cos( 3.14 * ( uv.y + 0.008 * iGlobalTime ) * iResolution.y * 0.5 ), 0.0, 1.0 );
-    float grille = 0.85 + 0.15 * clamp( 1.5 * cos( 3.14 * uv.x * iResolution.x * 1.0 ), 0.0, 1.0 );
+    float scanline = clamp( 0.95 + 0.05 * cos( 3.14 * ( uv.y + 0.008 * iGlobalTime ) * effectiveRes.y * 0.5 ), 0.0, 1.0 );
+    float grille = 0.85 + 0.15 * clamp( 1.5 * cos( 3.14 * uv.x * effectiveRes.x * 1.0 ), 0.0, 1.0 );
     color *= scanline * grille * 1.2;
 }
 
@@ -59,6 +59,8 @@ vec2 nearest(vec2 uv, vec2 textureDimension)
 }
 
 vec3 nesColor(vec2 uv) {
+    float screenScale = 1.35;
+
     uv = (uv - vec2(270.0/670.0,265.0/515.0)) * 1.35 + vec2(0.5);
 
     vec2 crtUV = CRTCurveUV(uv);
@@ -70,7 +72,7 @@ vec3 nesColor(vec2 uv) {
         color = vec3( 0.0, 0.0, 0.0 );
     }
     DrawVignette(color, crtUV);
-    DrawScanline(color, vec2(uv.x, crtUV.y));
+    DrawScanline(color, vec2(uv.x, crtUV.y), iResolution / screenScale);
 
     return color;
 }
