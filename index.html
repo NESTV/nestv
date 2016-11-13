@@ -8,15 +8,18 @@
 <script type="text/javascript">
 var gl;
 var canvas;
-var buffer
+var buffer;
+var iGlobalTime;
+var iDimensions;
+var dimensions = [640, 480];
 
 window.onload = init;
 
 function init() {
     canvas        = document.getElementById('glscreen');
     gl            = canvas.getContext('experimental-webgl');
-    canvas.width  = 640;
-    canvas.height = 480;
+    canvas.width  = dimensions[0];
+    canvas.height = dimensions[1];
 
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
@@ -57,6 +60,7 @@ function init() {
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
     iGlobalTime = gl.getUniformLocation(program, "iGlobalTime");
+    iDimensions = gl.getUniformLocation(program, "iDimensions");
 
     render();
 }
@@ -65,6 +69,7 @@ function render() {
     window.requestAnimationFrame(render, canvas);
 
     gl.uniform1f(iGlobalTime, (Date.now() / 1000 ) % 1);
+    gl.uniform2fv(iDimensions, dimensions);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
@@ -85,6 +90,7 @@ attribute vec2 a_position;
 #endif
 
 uniform float iGlobalTime;
+uniform vec2 iDimensions;
 
 vec2 CRTCurveUV( vec2 uv )
 {
@@ -104,13 +110,13 @@ void DrawVignette( inout vec3 color, vec2 uv )
 
 void DrawScanline( inout vec3 color, vec2 uv )
 {
-    float scanline 	= clamp( 0.95 + 0.05 * cos( 3.14 * ( uv.y + 0.008 * iGlobalTime ) * 240.0 * 1.0 ), 0.0, 1.0 );
-    float grille 	= 0.85 + 0.15 * clamp( 1.5 * cos( 3.14 * uv.x * 640.0 * 1.0 ), 0.0, 1.0 );
+    float scanline = clamp( 0.95 + 0.05 * cos( 3.14 * ( uv.y + 0.008 * iGlobalTime ) * iDimensions.y * 0.5 ), 0.0, 1.0 );
+    float grille = 0.85 + 0.15 * clamp( 1.5 * cos( 3.14 * uv.x * iDimensions.x * 1.0 ), 0.0, 1.0 );
     color *= scanline * grille * 1.2;
 }
 
 void main() {
-    vec2 uv = vec2(gl_FragCoord.x / 640.0, gl_FragCoord.y / 480.0);
+    vec2 uv = gl_FragCoord.xy / iDimensions;
     vec3 color = vec3(uv, 0.0);
     vec2 crtUV = CRTCurveUV(uv);
     if ( crtUV.x < 0.0 || crtUV.x > 1.0 || crtUV.y < 0.0 || crtUV.y > 1.0 ) {
