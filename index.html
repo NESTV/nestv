@@ -59,9 +59,9 @@ vec2 nearest(vec2 uv, vec2 textureDimension)
 }
 
 vec3 nesColor(vec2 uv) {
-    float screenScale = 1.35;
+    float screenScale = 1.45;
 
-    uv = (uv - vec2(270.0/670.0,265.0/515.0)) * 1.35 + vec2(0.5);
+    uv = (uv - vec2(272.5/670.0,269.0/515.0)) * screenScale + vec2(0.5);
 
     vec2 crtUV = CRTCurveUV(uv);
     vec2 textureUv = crtUV;
