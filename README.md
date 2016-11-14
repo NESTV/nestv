@@ -19,4 +19,4 @@ cd nestv/
 http-server
 ```
 
-3. Go to the hosted page, probably http://localhost:8080/ if you use http-server.
+Then just go to the hosted page, probably http://localhost:8080/ if you use http-server.
