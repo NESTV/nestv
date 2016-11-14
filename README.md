@@ -4,6 +4,8 @@ NES emulator TV website
 Uses this JS NES emulator: https://github.com/bfirsh/jsnes
 Shaders based on this Shader Toy: https://www.shadertoy.com/view/XtlSD7
 
+![Screen shot](screen-shot.png)
+
 instructions
 --
 
