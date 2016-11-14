@@ -100,6 +100,8 @@ function init() {
 
     function loadTexture(url) {
         var newTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, newTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
         var image = new Image();
         image.onload = function() { handleTextureLoaded(image, newTexture); };
         image.crossOrigin = '';
