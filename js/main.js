@@ -82,6 +82,7 @@ function init() {
     borderTexture = loadTexture("img/tv_border_2.png");
 
     $('.nes-screen').hide();
+    $('.nes-zoom').hide();
 
     render();
 
